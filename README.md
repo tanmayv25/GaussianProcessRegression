@@ -18,11 +18,11 @@ As the problem statement required us to use only a single SM,  the inter-thread 
 
 There are basically two components for parallelization, sum reductions and data independent computations. 
 
-####Sum Reduction:
+###Sum Reduction:
 In my implementation, I  have used a shared memory array of type double and length equal to the number of threads to store the partial sums which each thread calculates in parallel. In the next step, each thread calls upon the routine to get_total_sum. In this routine, at every step, half as many threads  aggregates the partial some from other halves in a stride friendly manner for memory bandwidth optimization. The memory accesses to adjacent locations can be served in parallel giving higher bandwidth.  The shared memory access is faster as it is closer to the core.  Also, the logic computes the sum only from populated entries avoiding unnecessary calculations. 
 
 
-####Cholesky Decomposition:
+###Cholesky Decomposition:
 Though the code refers to L for a Lower triangular matrix, the matrix is populated and stored as Upper Triangular to improve memory bandwidth as accesses can be coalesced among different threads easily. It should be noted that  Cholesky factors are transpose of one another. Hence, we can either compute L or L’. As the memory accesses for L’ is better optimized for L’ , I have stored it as L’. 
 This routine goes to each row in L one by one. All threads in a row compute the diagonal element using Sum Reductions. Once the diagonal element is available, the dependency for entire row is complete and all threads start calculating a corresponding element. Again shared memory array is used to store the working sum which improves the memory operations. After the completion of this  row, same steps are carried out for the next row as well.
 
@@ -56,7 +56,7 @@ There are many synchronization calls and presence of divergent threads in my cod
 
 <details>
     <summary> Output using 1 GPU core </summary>
-----
+
 Selected m value : 64
 The required Rstar value : 2.000000, 2.000000
 Input: N = 1, threads_per_block = 1
@@ -68,18 +68,17 @@ Floating point operations Cholesky Factorization: 22931662848
 Floating point operations per second (FLOPS) Cholesky : 0.009444 Gflops
 Floating point operations Solver: 33570816
 Floating point operations per second (FLOPS) Solver: 0.004166 Gflops
-----
 </details>
 
 The speed-up/efficiency obtained on 196 cores over a single core :
 
-          |Single_core|Full SM|Speed-up |Efficiency|
-----------|-----------|-------|---------|----------|
-Cholesky  |2261328	  |17478  |129.38	|66.01%    |
-----------|-----------|-------|---------|----------|
-Solver	  |7504	      |128	  |58.63	|29.91%    |
-----------|-----------|-------|---------|----------|
-Total	  |2347107	  |18134  |129.43	|66.04%    |
-----------|-----------|-------|---------|----------|
+|          |Single_core|Full SM|Speed-up |Efficiency|
+|----------|-----------|-------|---------|----------|
+|Cholesky  |2261328	   |17478  |129.38	 |66.01%    |
+|----------|-----------|-------|---------|----------|
+|Solver	   |7504	   |128	   |58.63	 |29.91%    |
+|----------|-----------|-------|---------|----------|
+|Total	   |2347107	   |18134  |129.43	 |66.04%    |
+|----------|-----------|-------|---------|----------|
 
 
