@@ -73,6 +73,7 @@ Floating point operations per second (FLOPS) Solver: 0.004166 Gflops
 The speed-up/efficiency obtained on 196 cores over a single core :
 
 |          |Single_core|Full SM|Speed-up |Efficiency|
+|----------|-----------|-------|---------|----------|
 |Cholesky  |2261328	   |17478  |129.38	 |66.01%    |
 |Solver	   |7504	   |128	   |58.63	 |29.91%    |
 |Total	   |2347107	   |18134  |129.43	 |66.04%    |
